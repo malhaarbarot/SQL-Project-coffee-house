@@ -1,61 +1,98 @@
-# SQL Project
+# Monday Coffee SQL Project
 
-## Objective
+This project analyzes Monday Coffee sales data and recommends cities for new coffee-shop locations.
 
-The goal of this project is to analyze the sales data of Monday Coffee, a company that has been selling its products online since January 2023, and to recommend the top three major cities in India for opening new coffee shop locations based on consumer demand and sales performance.
+The project is written for **MySQL 8.0 or newer** and can be run in MySQL Workbench.
 
-## Key Questions
+## Project files
 
-1. **Coffee Consumers Count**  
-   How many people in each city are estimated to consume coffee, given that 25% of the population does?
+| File            | Purpose                                            |
+| --------------- | -------------------------------------------------- |
+| `Schemas.sql`   | Creates the `coffee_house` database and its tables |
+| `Solutions.sql` | Runs the data checks and ten analysis reports      |
+| `city.csv`      | City population and rent data                      |
+| `customers.csv` | Customer data                                      |
+| `products.csv`  | Product data                                       |
+| `sales.csv`     | Sales transactions                                 |
 
-2. **Total Revenue from Coffee Sales**  
-   What is the total revenue generated from coffee sales across all cities in the last quarter of 2023?
+## Run in MySQL Workbench
 
-3. **Sales Count for Each Product**  
-   How many units of each coffee product have been sold?
+### 1. Create the tables
 
-4. **Average Sales Amount per City**  
-   What is the average sales amount per customer in each city?
+1. Open MySQL Workbench and connect to your MySQL server.
+2. Open `Schemas.sql`.
+3. Execute the entire script.
 
-5. **City Population and Coffee Consumers**  
-   Provide a list of cities along with their populations and estimated coffee consumers.
+The script creates and selects a database named `coffee_house`. It also removes and recreates the four project tables, so do not run it if you need to preserve existing data.
 
-6. **Top Selling Products by City**  
-   What are the top 3 selling products in each city based on sales volume?
+### 2. Import the CSV files
 
-7. **Customer Segmentation by City**  
-   How many unique customers are there in each city who have purchased coffee products?
+Use MySQL Workbench's **Table Data Import Wizard**. Import the files into these tables:
 
-8. **Average Sale vs Rent**  
-   Find each city and their average sale per customer and avg rent per customer
+| CSV file        | Table       |
+| --------------- | ----------- |
+| `city.csv`      | `city`      |
+| `products.csv`  | `products`  |
+| `customers.csv` | `customers` |
+| `sales.csv`     | `sales`     |
 
-9. **Monthly Sales Growth**  
-   Sales growth rate: Calculate the percentage growth (or decline) in sales over different time periods (monthly).
+Import `city.csv` and `products.csv` first. Then import `customers.csv`, followed by `sales.csv`, because foreign keys reference those tables.
 
-10. **Market Potential Analysis**  
-    Identify top 3 city based on highest sales, return city name, total sale, total rent, total customers, estimated coffee consumer
+When importing:
 
-## Recommendations
+- Select **CSV** as the file type.
+- Enable **column names in the first row** / header.
+- Use a comma as the separator.
+- Confirm that the columns map to the matching table columns.
 
-After analyzing the data, the recommended top three cities for new store openings are:
+### 3. Check the imported data
 
-**City 1: Pune**
+Run:
 
-1. Average rent per customer is very low.
-2. Highest total revenue.
-3. Average sales per customer is also high.
+```sql
+USE coffee_house;
 
-**City 2: Delhi**
+SELECT COUNT(*) AS city_count FROM city;
+SELECT COUNT(*) AS customer_count FROM customers;
+SELECT COUNT(*) AS product_count FROM products;
+SELECT COUNT(*) AS sale_count FROM sales;
+```
 
-1. Highest estimated coffee consumers at 7.7 million.
-2. Highest total number of customers, which is 68.
-3. Average rent per customer is 330 (still under 500).
+Each count should be greater than zero.
 
-**City 3: Jaipur**
+### 4. Run the analysis
 
-1. Highest number of customers, which is 69.
-2. Average rent per customer is very low at 156.
-3. Average sales per customer is better at 11.6k.
+Open `Solutions.sql` and execute the entire script. It contains:
 
----
+1. Estimated coffee consumers by city
+2. Q4 2023 revenue
+3. Product sales counts
+4. Average sales per customer by city
+5. Population and coffee-consumer estimates
+6. Top three products by city
+7. Unique customers by city
+8. Average sales compared with rent
+9. Monthly sales growth
+10. Top three cities by total sales
+
+## Run from the MySQL command line
+
+From the project directory, run:
+
+```bash
+mysql -u root -p < Schemas.sql
+```
+
+After importing the CSV files through MySQL Workbench, run:
+
+```bash
+mysql -u root -p coffee_house < Solutions.sql
+```
+
+Replace `root` with your MySQL username if necessary.
+
+## Notes
+
+- MySQL 8.0+ is required for the common table expressions and window functions used by the reports.
+- The SQL uses MySQL functions such as `YEAR()`, `MONTH()`, and `QUARTER()`.
+- The monetary columns use `DECIMAL` rather than floating-point types.
